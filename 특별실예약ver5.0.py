@@ -25,7 +25,7 @@ SPECIAL_ROOMS = [
     "[4층]지구과학실", "[4층]특별교실C(크롬북실)", "[4층]진로상담실", "[4층]동아리실",
     "[4층]학생회실", "[3층]힐링존B", "[3층]특별교실B", "[3층]융합교실",
     "[2층]힐링존A", "[2층]컴퓨터실B", "[1층]YB스튜디오(방송실)", "[1층]YB아트리움",
-    "[1층]화학실", "[1층]컴퓨터실A", "[1층]생물실", "[외부]음악실", "[외부]강당", "[신관]특별교실D"
+    "[1층]화학실", "[1층]컴퓨터실A", "[1층]생물실", "[1층]회의실", "[외부]음악실", "[외부]강당", "[신관]특별교실D"
 ]
 
 PERIODS_DATA = [
@@ -318,24 +318,21 @@ def page_reserve():
     
     st.caption(f"📍 {selected_room} | 📅 {date_str}")
     
-    # 교시 체크박스를 3열로 배치
+    # ✅ 교시 체크박스를 세로로 순서대로 배치 (모바일 호환)
     selected_periods = []
-    cols = st.columns(3)
     
     for i, period in enumerate(PERIODS_DATA):
-        col_idx = i % 3
-        with cols[col_idx]:
-            if period["key"] in reserved:
-                reserver = reserved[period["key"]]
-                st.checkbox(
-                    f"🔒 {period['display']} - {reserver['이름']}",
-                    value=False,
-                    disabled=True,
-                    key=f"period_{i}"
-                )
-            else:
-                if st.checkbox(f"✅ {period['display']}", key=f"period_{i}"):
-                    selected_periods.append(period["key"])
+        if period["key"] in reserved:
+            reserver = reserved[period["key"]]
+            st.checkbox(
+                f"🔒 {period['display']} - {reserver['이름']}",
+                value=False,
+                disabled=True,
+                key=f"period_{i}"
+            )
+        else:
+            if st.checkbox(f"✅ {period['display']}", key=f"period_{i}"):
+                selected_periods.append(period["key"])
     
     st.markdown("---")
     
