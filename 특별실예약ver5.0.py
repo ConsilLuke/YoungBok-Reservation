@@ -43,7 +43,21 @@ PERIODS_DATA = [
     {"key": "이후", "display": "이후 (18:50-)"},
 ]
 
-COLUMNS = ["날짜", "특별실", "교시", "이름", "직책", "사유", "신청일시"]
+COLUMNS = ["날짜", "특별실", "교시", "이름", "직책", "사유", "신청일시", "IP주소"]
+
+# ==================== IP 주소 가져오기 ====================
+def get_client_ip():
+    """접속자 IP 주소 가져오기"""
+    try:
+        # Streamlit Cloud에서는 x-forwarded-for 헤더 사용
+        headers = st.context.headers
+        ip = headers.get("x-forwarded-for", "알수없음")
+        # 여러 IP가 있으면 첫 번째 (실제 클라이언트)
+        if "," in ip:
+            ip = ip.split(",")[0].strip()
+        return ip
+    except:
+        return "알수없음"
 
 # ==================== Google Sheets 연결 ====================
 @st.cache_resource
@@ -350,6 +364,7 @@ def page_reserve():
                     "직책": st.session_state.role,
                     "사유": reason.strip(),
                     "신청일시": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "IP주소": get_client_ip(),
                 }
                 success, msg = save_reservation(reservation)
                 if success:
@@ -466,7 +481,7 @@ def page_all_reservations():
     
     import pandas as pd
     df = pd.DataFrame(filtered)
-    display_columns = ["날짜", "특별실", "교시", "이름", "직책", "사유", "신청일시"]
+    display_columns = ["날짜", "특별실", "교시", "이름", "직책", "사유", "신청일시", "IP주소"]
     available_columns = [col for col in display_columns if col in df.columns]
     
     if available_columns:
